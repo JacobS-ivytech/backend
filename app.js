@@ -1,14 +1,17 @@
 //setup this is silmilar to when we use our default tags in html
 
 const express = require("express")
+//we have to use cors in order to use a frontend and backend on the same device
+var cors = require('cors')
 //activate or t ell this pp variable to be an ewpress server
 const app = express()
+app.use(cors())
 const router = express.Router()
 
 //start the web server... app.listen(portnumber, function)
-app.listen(3000, function () {
+/*app.listen(3000, function () {
     console.log("Listening on port 3000")
-})
+})*/
 
 //making api using routes
 //routes are ued to handle browser requests. they look likeurls. the difference is that
@@ -25,3 +28,26 @@ app.get("/goodbye", function (req, res) {
     res.send("<h1>Goodbye Express</h1>")
 })
     */
+
+router.get("/songs", function (req, res) {
+    const songs = [{
+        title: "Uptown Funk",
+        artist: "Bruno Mars",
+        popularity: 10,
+        releaseDate: new Date(2011, 9, 22),
+        genre: ["funk", "boogie"]
+    },
+    {
+        title: "Happy",
+        artist: "Pharrell Williams",
+        popularity: 10,
+        releaseDate: new Date(2013, 11, 21),
+        genre: ["funk", "boogie"]
+    }
+    ]
+    res.json(songs)
+})
+
+//all requests that usually use an api start with /api... so the url would be loacalhost:3000/api/songs
+app.use("/api", router)
+app.listen(3000)
