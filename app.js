@@ -5,8 +5,50 @@ const express = require("express")
 var cors = require('cors')
 //activate or t ell this pp variable to be an ewpress server
 const app = express()
+//const bodyParser = require('body-parser')
+const Song = require("./models/songs")
+
 app.use(cors())
+//Middleware that parses HTTP request with json body
+app.use(express.json())
+
 const router = express.Router()
+
+//grab all the songs in the db
+router.get("/songs", async (req, res) => {
+    try {
+        const songs = await Song.find({})
+        res.send(songs)
+        console.log(songs)
+    }
+    catch (err) {
+        console.log(err)
+    }
+}
+)
+
+router.post("/songs", async (req, res) => {
+    try {
+        const song = await new Song(req.body)
+        await song.save()
+        res.status(201).json(song)
+        console.log(song)
+    }
+    catch (err) {
+        res.status(400).send(err)
+    }
+})
+
+//to find all songs ina database yhou just use the find() that isa built into mongoose
+/*
+Song.find(query, function (err, songs) {
+    if (err) {
+        res.status(400).send(err)
+    } else {
+        res.json(songs)
+    }
+})
+*/
 
 //start the web server... app.listen(portnumber, function)
 /*app.listen(3000, function () {
@@ -27,7 +69,7 @@ const router = express.Router()
 app.get("/goodbye", function (req, res) {
     res.send("<h1>Goodbye Express</h1>")
 })
-    */
+    
 
 router.get("/songs", function (req, res) {
     const songs = [{
@@ -47,6 +89,9 @@ router.get("/songs", function (req, res) {
     ]
     res.json(songs)
 })
+*/
+
+
 
 //all requests that usually use an api start with /api... so the url would be loacalhost:3000/api/songs
 app.use("/api", router)
