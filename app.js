@@ -42,13 +42,15 @@ router.post("/songs", async (req, res) => {
 //grab a single song in database
 router.get("/songs/:id", async (req, res) => {
     try {
-        song = await Song.findById(req.params.id)
+        const song = await Song.findById(req.params.id)
         res.json(song)
     }
     catch (err) {
         res.status(400).send(err)
     }
 })
+
+
 
 //to find all songs ina database yhou just use the find() that isa built into mongoose
 /*
