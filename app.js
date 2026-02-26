@@ -51,7 +51,7 @@ router.get("/songs/:id", async (req, res) => {
 })
 
 //up[date is toupdate an existing rexord
-router.put("/:id", async (req, res) => {
+router.put("/songs/:id", async (req, res) => {
     //first we need to find andupdqate the song the fron tnd wans us to updte
     //to do this we need to request the id fo the song form request
     //and the find it in the dtabese update it
