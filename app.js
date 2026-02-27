@@ -7,12 +7,35 @@ var cors = require('cors')
 const app = express()
 //const bodyParser = require('body-parser')
 const Song = require("./models/songs")
+const jwt = require('jwt-simple')
+const User = require("./models/users")
 
 app.use(cors())
 //Middleware that parses HTTP request with json body
 app.use(express.json())
 
 const router = express.Router()
+const secret = "supersecret"
+
+//creating a new user
+router.post("/user", async (req, res) => {
+    if (!req.body.username || !req.body.password) {
+        res.status(400).json({ error: "Missing username or password" })
+    }
+
+    const newUser = await new User({
+        username: req.body.username,
+        password: req.body.password,
+        status: req.body.status
+    })
+    console.log(newUser)
+    try {
+        await newUser.save()
+        res.sendStatus(201)//creqted
+    }
+    catch (err) {
+    }
+})
 
 //grab all the songs in the db
 router.get("/songs", async (req, res) => {
@@ -64,6 +87,18 @@ router.put("/songs/:id", async (req, res) => {
     }
 }
 )
+
+router.delete("/songs/:id", async (req, res) => {
+    //methjod or fufnciton in mongoose to delete a single instance of  song or object
+    try {
+        const song = await Song.findById(req.params.id)
+        await Song.deleteOne({ _id: song._id })
+        res.sendStatus(200)
+    }
+    catch (err) {
+        res.status(400).send(err)
+    }
+})
 
 
 
