@@ -37,6 +37,66 @@ router.post("/user", async (req, res) => {
     }
 })
 
+//authenticate or login
+//post request - reason why is because wehn you login you are creatng what we call a new 'session'
+router.post("/auth", async (req, res) => {
+    if (!req.body.username || !req.body.password) {
+        res.status(400).json({ error: "Missing username or password" })
+        return
+    }
+    //try to find the usernme in the database, then see if it matches with a username and password
+    //await finding user
+    let user = await User.findOne({ username: req.body.username })
+    //connection or server error
+
+    if (!user) {
+        res.status(401).json({ error: "Bad Username" })
+    }
+    else {
+        //check to see if the users pasoword matches the requests password
+        if (user.password != req.body.password) {
+            res.status(401).json({ error: "Bad Password" })
+        }
+        else {
+            //succesfull login
+            //create a token that is encoded with the jwt library, and send back the username.. this willbe 
+            //we also will send back qs part of the token that you are current authorized
+            //we could do this with a boolean or aq number value ii.e if auth = 0 you are not authorized, if auth =1
+            //you are authorized
+
+            username2 = user.username
+            const token = jwt.encode({ username: user.username }, secret)
+            const auth = 1
+
+            //respond with the token
+            res.json({
+                username2,
+                token: token,
+                auth: auth
+            })
+        }
+    }
+})
+
+//check status of ;user with a valid token, see if ti matches the front end token
+router.get("/status", async (req, res) => {
+    if (!req.headers["x-auth"]) {
+        return res.status(401).json({ error: "Missing X-Auth" })
+    }
+
+    //if x-auth contains the toekn (it should)
+    const token = req.headers["x-auth"]
+    try {
+        const decoded = jwt.decode(token, secret)
+        //send back all username adn staus fiedls to the user or front end
+        let users = User.find({}, "username status")
+        res.json(users)
+    }
+    catch (ex) {
+        res.status(401).json({ error: "invalid jwt" })
+    }
+})
+
 //grab all the songs in the db
 router.get("/songs", async (req, res) => {
     try {
